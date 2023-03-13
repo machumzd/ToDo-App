@@ -3,7 +3,19 @@ import { useState } from "react";
 function App() {
   const [toDos, setToDos] = useState([]);
   const [toDo, setToDo] = useState("");
-  const [currentDay] = useState(new Date().toLocaleString('en-US', { weekday: 'long' }));
+  const [currentDay] = useState(
+    new Date().toLocaleString("en-US", { weekday: "long" })
+  );
+  const handleCheck = (id) => {
+    setToDos(
+      toDos.map((obj) => {
+        if (obj.id === id) {
+          return { ...obj, status: !obj.status };
+        }
+        return obj;
+      })
+    );
+  };
   return (
     <div className="app">
       <div className="mainHeading">
@@ -21,58 +33,57 @@ function App() {
           placeholder="🖊️ Add item..."
         />
         <i
-          onClick={() =>
+          onClick={() =>{
+             if(toDo.trim()===''){
+              alert("Please enter a todo item");
+             }else{
             setToDos([...toDos, { id: Date.now(), text: toDo, status: false }])
-          }
+             }}
+            }
           className="fas fa-plus"
         ></i>
       </div>
       <div className="todos">
         {toDos.map((obj) => {
           return (
-            <div className="todo">
+            <div key={obj.id} className="todo">
               <div className="left">
                 <input
-                  onChange={(e) => {
-                    setToDos(
-                      toDos.filter((obj2) => {
-                        if (obj2.id === obj.id) {
-                          obj2.status = e.target.checked;
-                        }
-                        return obj2;
-                      })
-                    );
-                  }}
-                  value={obj.status}
+                  onChange={() => handleCheck(obj.id)}
+                  checked={obj.status}
                   type="checkbox"
                   name=""
                   id=""
                 />
-                
-                <p>{obj.text}</p>
+                <p style={{ textDecoration: obj.status ? "line-through" : "" }}>
+                  {obj.text}
+                </p>
               </div>
               <div className="right">
-                <i onClick={(e)=>{
-                  setToDos(toDos.filter((obj2)=>{
-                    return obj2.id!==obj.id;
-                  }))
-                }
-              }
-                className="fas fa-times"></i>
+                <i
+                  onClick={(e) => {
+                    setToDos(
+                      toDos.filter((obj2) => {
+                        return obj2.id !== obj.id;
+                      })
+                    );
+                  }}
+                  className="fas fa-times"
+                ></i>
               </div>
             </div>
           );
         })}
-        <h2 style={{marginTop:'2rem',borderBottom:"2px solid white"}}>Completed Tasks</h2>
+        <h2 style={{ marginTop: "2rem", borderBottom: "2px solid white" }}>
+          Completed Tasks
+        </h2>
         {toDos.map((obj) => {
           if (obj.status) {
             return (
-              <div className="completed">
-                
-              <h4>{obj.text}</h4>
+              <div key={obj.id} className="completed">
+                <h4>{obj.text}--({new Date().toLocaleDateString()})</h4>
               </div>
-            )
-
+            );
           }
           return null;
         })}
